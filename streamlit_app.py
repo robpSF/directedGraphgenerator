@@ -3,9 +3,8 @@ import pandas as pd
 import itertools
 
 # Function to generate permutations between factions and add affinity
-def generate_permutations(df):
-    factions = df['Faction'].dropna().tolist()
-    permutations = list(itertools.permutations(factions, 2))
+def generate_permutations(selected_factions):
+    permutations = list(itertools.permutations(selected_factions, 2))
     # Create DataFrame and add a default affinity value
     permutations_df = pd.DataFrame(permutations, columns=["Faction", "Other_Faction"])
     permutations_df['Affinity'] = 0  # Default affinity value; modify if needed
@@ -25,18 +24,25 @@ if uploaded_file:
     st.write("Uploaded CSV preview:")
     st.write(df.head())
     
-    # Generate permutations with affinity
-    permutations_df = generate_permutations(df)
+    # Let the user select factions to remove
+    factions = df['Faction'].dropna().tolist()
+    selected_factions = st.multiselect("Select factions to include (unselect to remove):", factions, default=factions)
     
-    # Display the permutations
-    st.write("Generated Permutations with Affinity:")
-    st.write(permutations_df)
-    
-    # Provide a download button for the generated CSV
-    csv = permutations_df.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="Download Permutations with Affinity as CSV",
-        data=csv,
-        file_name='permutations_factions_with_affinity.csv',
-        mime='text/csv',
-    )
+    if selected_factions:
+        # Generate permutations with affinity
+        permutations_df = generate_permutations(selected_factions)
+        
+        # Display the permutations
+        st.write("Generated Permutations with Affinity:")
+        st.write(permutations_df)
+        
+        # Provide a download button for the generated CSV
+        csv = permutations_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Permutations with Affinity as CSV",
+            data=csv,
+            file_name='permutations_factions_with_affinity.csv',
+            mime='text/csv',
+        )
+    else:
+        st.write("Please select at least two factions to generate permutations.")
