@@ -29,7 +29,7 @@ if uploaded_file:
         factions = df['Faction'].dropna().tolist()
     except:
         st.write("The column 'Faction' is missing from the uploaded file. Please ensure that your file contains a column named 'Faction' and try again.")
-        exit
+        exit()
     
     selected_factions = st.multiselect("Select factions to include (unselect to remove):", factions, default=factions)
     
